@@ -17,8 +17,8 @@ export class Waiter {
     return Waiter.applyAndWait(null, asyncFunction, restParams);
   }
 
-  static forMethod<T>(obj: T, methodName: keyof T, ...restParams: any[]): void {
-    const method = obj[methodName];
+  static forMethod<T>(obj: T, methodName: string, ...restParams: any[]): void {
+    const method = (obj as any)[methodName];
 
     return Waiter.applyAndWait(obj, method, restParams);
   }
