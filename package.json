@@ -1,0 +1,40 @@
+{
+  "name": "waiter",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "dist/waiter.umd.js",
+  "module": "dist/waiter.es5.js",
+  "typings": "dist/types/waiter.d.ts",
+  "files": [
+    "dist"
+  ],
+  "author": "OscarGalindo <oscar.galindo@apiumhub.com>",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc --module commonjs",
+    "test": "TS_NODE_PROJECT=./tsconfig.test.json mocha --require ts-node/register test/**/*.spec.ts"
+  },
+  "devDependencies": {
+    "@types/chai": "4.1.2",
+    "@types/mocha": "2.2.48",
+    "@types/node": "9.4.6",
+    "chai": "4.1.2",
+    "mocha": "5.0.1",
+    "rimraf": "2.6.1",
+    "ts-node": "4.1.0",
+    "typescript": "2.6.2"
+  },
+  "dependencies": {
+    "@types/fibers": "^0.0.30",
+    "fibers": "2.0.0"
+  }
+}
