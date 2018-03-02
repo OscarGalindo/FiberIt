@@ -12,7 +12,7 @@
   "author": "OscarGalindo <oscar.galindo@apiumhub.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OscarGalindo/FiberIt"
+    "url": "https://github.com/OscarGalindo/FiberIt.git"
   },
   "license": "MIT",
   "engines": {
