@@ -15,7 +15,7 @@ describe("given waiter", () => {
   describe("when wait for an async function", () => {
     it("then should yield execution", (done) => {
       Waiter.launchFiber(() => {
-        const theNumber = Waiter.for(asynFunction, 5);
+        const theNumber: number = Waiter.for<number>(asynFunction, 5);
         expect(theNumber).to.equal(10);
         done();
       });
@@ -26,7 +26,7 @@ describe("given waiter", () => {
     it("then should yield execution", (done) => {
       Waiter.launchFiber(() => {
         const sut = new TestAsyncMethodClass();
-        const theNumber = Waiter.forMethod(sut, 'someAsyncMethod', 5);
+        const theNumber = Waiter.forMethod<TestAsyncMethodClass, number>(sut, 'someAsyncMethod', 5);
         expect(theNumber).to.equal(10);
         done();
       });
@@ -40,7 +40,7 @@ function asynFunction(someNumber: number, cb: Function) {
 }
 
 class TestAsyncMethodClass {
-  someAsyncMethod(someNumber: number, cb: NodeCallback) {
+  someAsyncMethod(someNumber: number, cb: NodeCallback<number>) {
     setTimeout(() => cb(null, someNumber * 2), 500);
   }
 }
