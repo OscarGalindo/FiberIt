@@ -1,11 +1,11 @@
 import {expect} from 'chai';
-import {NodeCallback, Waiter} from "../src/waiter";
+import {NodeCallback, Fiberit} from "../src/fiberit";
 import * as fibers from "fibers";
 
 describe("given waiter", () => {
   describe("when launch fiber", () => {
     it("then should create a fiber", (done) => {
-      Waiter.launchFiber(() => {
+      Fiberit.launchFiber(() => {
         expect(fibers.current).to.not.null;
         done();
       });
@@ -14,8 +14,8 @@ describe("given waiter", () => {
 
   describe("when wait for an async function", () => {
     it("then should yield execution", (done) => {
-      Waiter.launchFiber(() => {
-        const theNumber: number = Waiter.for<number>(asynFunction, 5);
+      Fiberit.launchFiber(() => {
+        const theNumber: number = Fiberit.for<number>(asynFunction, 5);
         expect(theNumber).to.equal(10);
         done();
       });
@@ -24,9 +24,9 @@ describe("given waiter", () => {
 
   describe("when wait for method property", () => {
     it("then should yield execution", (done) => {
-      Waiter.launchFiber(() => {
+      Fiberit.launchFiber(() => {
         const sut = new TestAsyncMethodClass();
-        const theNumber = Waiter.forMethod<TestAsyncMethodClass, number>(sut, 'someAsyncMethod', 5);
+        const theNumber = Fiberit.forMethod<TestAsyncMethodClass, number>(sut, 'someAsyncMethod', 5);
         expect(theNumber).to.equal(10);
         done();
       });

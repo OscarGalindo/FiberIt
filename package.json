@@ -1,11 +1,11 @@
 {
-  "name": "waiter",
-  "version": "0.0.0",
+  "name": "fiberit",
+  "version": "0.0.1",
   "description": "",
   "keywords": [],
-  "main": "dist/waiter.umd.js",
-  "module": "dist/waiter.es5.js",
-  "typings": "dist/types/waiter.d.ts",
+  "main": "dist/fiberit.umd.js",
+  "module": "dist/fiberit.es5.js",
+  "typings": "dist/types/fiberit.d.ts",
   "files": [
     "dist"
   ],

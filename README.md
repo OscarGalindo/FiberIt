@@ -1,1 +1,1 @@
-# waiter (wait.for in Typescript) - Fiber Wrapper
+# Fiberit (wait.for in Typescript) - Fiber Wrapper
