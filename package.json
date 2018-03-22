@@ -3,8 +3,7 @@
   "version": "0.0.2",
   "description": "",
   "keywords": [],
-  "main": "dist/fiberit.umd.js",
-  "module": "dist/fiberit.es5.js",
+  "main": "dist/lib/fiberit.js",
   "typings": "dist/types/fiberit.d.ts",
   "files": [
     "dist"
