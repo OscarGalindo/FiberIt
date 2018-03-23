@@ -31,7 +31,7 @@ export class Fiberit {
 
     const resumeCallback: NodeCallback<V> = function (err: any, data: V) {
       if (fiber.callbackAlreadyCalled) {
-        throw new Error("Callback for function " + fnName + " called twice. Wait.for already resumed the execution.");
+        throw new Error("Callback for function " + fnName + " called twice. Fiberit already resumed the execution.");
       }
       fiber.callbackAlreadyCalled = true;
       fiber.err = err;
