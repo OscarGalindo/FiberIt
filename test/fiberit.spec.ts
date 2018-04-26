@@ -32,6 +32,37 @@ describe("given waiter", () => {
       });
     });
   });
+
+  describe("when wait for a promise", () => {
+    it("then should return data if promise is resolved", (done) => {
+      Fiberit.launchFiber(() => {
+        const sut = new TestAsyncMethodClass();
+        const theNumber = Fiberit.forPromise<TestAsyncMethodClass, number>(sut, 'somePromise', 5);
+        expect(theNumber).to.equal(5);
+        done();
+      });
+    });
+
+    it("then should throw if promise is rejected", (done) => {
+      Fiberit.launchFiber(() => {
+        const sut = new TestAsyncMethodClass();
+        const shouldThrow = () => Fiberit.forPromise<TestAsyncMethodClass, number>(sut, 'someRejectPromise', 5);
+        expect(shouldThrow).to.throw("An error");
+        done();
+      });
+    });
+
+    describe("when resolve promise but expect fails", () => {
+      it("then should throw outside promise", (done) => {
+        Fiberit.launchFiber(() => {
+          const sut = new TestAsyncMethodClass();
+          const theNumber = Fiberit.forPromise<TestAsyncMethodClass, number>(sut, 'somePromise', 5);
+          expect(theNumber).to.equal(15);
+          done();
+        });
+      });
+    });
+  });
 });
 
 
@@ -42,5 +73,13 @@ function asynFunction(someNumber: number, cb: Function) {
 class TestAsyncMethodClass {
   someAsyncMethod(someNumber: number, cb: NodeCallback<number>) {
     setTimeout(() => cb(null, someNumber * 2), 500);
+  }
+
+  somePromise(someNumber: number): Promise<number> {
+    return new Promise<number>(resolve => setTimeout(() => resolve(someNumber), 500));
+  }
+
+  someRejectPromise(someNumber: number): Promise<number> {
+    return new Promise<number>((_, reject) => setTimeout(() => reject("An error"), 500));
   }
 }

@@ -14,16 +14,22 @@ export class Fiberit {
 
   static for<T>(asyncFunction: Function, ...restParams: any[]): T {
     isFunction(asyncFunction);
-    return Fiberit.applyAndWait<null, T>(null, asyncFunction, restParams);
+    return Fiberit.applyAndWait<null, T>(asyncFunction, restParams);
   }
 
   static forMethod<T, V>(obj: T, methodName: keyof T, ...restParams: any[]): V {
-    const method = (obj as any)[methodName]; // TODO this breaks signature from method, if method return string and V is set as number, will compile.
+    const method = (obj as any)[methodName].bind(obj); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
 
-    return Fiberit.applyAndWait<T, V>(obj, method, restParams);
+    return Fiberit.applyAndWait<T, V>(method, restParams);
   }
 
-  private static applyAndWait<T, V>(thisValue: T, fn: Function, args: any): V {
+  static forPromise<T, V>(obj: T, methodName: keyof T, ...restParams: any[]): V {
+    const promise: Promise<V> = (obj as any)[methodName].apply(obj, restParams); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
+
+    return Fiberit.applyAndWaitPromise<V>(promise);
+  }
+
+  private static applyAndWait<T, V>(fn: Function, args: any): V {
     const fiber: any = fibers.current;
     if (!fiber) throw new Error('Async method can only be called inside a Fiber.');
 
@@ -48,8 +54,54 @@ export class Fiberit {
 
     fiber.callbackAlreadyCalled = false;
     fiber.yielded = false;
-    fn.apply(thisValue, args);
+    fn.apply(null, args);
     if (!fiber.callbackAlreadyCalled) {
+      fiber.yielded = true;
+      fibers.yield();
+    }
+
+    if (fiber.err) throw fiber.err;
+    return fiber.data;
+  }
+
+  private static applyAndWaitPromise<V>(promise: Promise<V>): V {
+    const fiber: any = fibers.current;
+    if (!fiber) throw new Error('Async method can only be called inside a Fiber.');
+
+    fiber.promiseCalled = false;
+    fiber.yielded = false;
+
+    promise
+      .then(data => {
+        if (fiber.promiseCalled) {
+          throw new Error("Callback for promise called twice. Fiberit already resumed the execution.");
+        }
+
+        fiber.promiseCalled = true;
+        fiber.data = data;
+        if (!fiber.yielded) {
+          return;
+        }
+        else {
+          return fiber.run();
+        }
+      })
+      .catch(error => {
+        if (fiber.promiseCalled) {
+          throw new Error("Callback for promise called twice. Fiberit already resumed the execution.");
+        }
+
+        fiber.promiseCalled = true;
+        fiber.err = error;
+        if (!fiber.yielded) {
+          return;
+        }
+        else {
+          return fiber.run();
+        }
+      });
+
+    if (!fiber.promiseCalled) {
       fiber.yielded = true;
       fibers.yield();
     }
