@@ -1,15 +1,15 @@
 import * as fibers from 'fibers';
 
-export type NodeCallback<T> = (err: any, success: T) => void;
+export type NodeCallback<T> = (err: any, success: T | null) => void;
 
 function isFunction(fn: Function) {
   if (typeof fn !== 'function') throw new Error('Not a function');
 }
 
 export class Fiberit {
-  static launchFiber(fn: Function, ...restParams: any[]): void {
+  static launchFiber(fn: Function, ...restParams: any[]): any {
     isFunction(fn);
-    fibers(function () { fn.apply(null, restParams)}).run();
+    return fibers(function () { fn.apply(null, restParams)}).run();
   }
 
   static for<T>(asyncFunction: Function, ...restParams: any[]): T {
@@ -65,48 +65,22 @@ export class Fiberit {
   }
 
   private static applyAndWaitPromise<V>(promise: Promise<V>): V {
-    const fiber: any = fibers.current;
-    if (!fiber) throw new Error('Async method can only be called inside a Fiber.');
+    const promiseCallback = (cb: NodeCallback<V>) => {
+      promise
+        .then(data => {
+          cb(null, data);
+        })
+        .catch(error => {
+          cb(error, null);
+        });
+    };
 
-    fiber.promiseCalled = false;
-    fiber.yielded = false;
-
-    promise
-      .then(data => {
-        if (fiber.promiseCalled) {
-          throw new Error("Callback for promise called twice. Fiberit already resumed the execution.");
-        }
-
-        fiber.promiseCalled = true;
-        fiber.data = data;
-        if (!fiber.yielded) {
-          return;
-        }
-        else {
-          return fiber.run();
-        }
-      })
-      .catch(error => {
-        if (fiber.promiseCalled) {
-          throw new Error("Callback for promise called twice. Fiberit already resumed the execution.");
-        }
-
-        fiber.promiseCalled = true;
-        fiber.err = error;
-        if (!fiber.yielded) {
-          return;
-        }
-        else {
-          return fiber.run();
-        }
-      });
-
-    if (!fiber.promiseCalled) {
-      fiber.yielded = true;
-      fibers.yield();
-    }
-
-    if (fiber.err) throw fiber.err;
-    return fiber.data;
+    return this.for(promiseCallback);
   }
+}
+
+interface PromiseResolved {
+  error: any;
+  data: any;
+  fulfilled: true;
 }

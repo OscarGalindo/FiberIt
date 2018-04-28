@@ -1,12 +1,12 @@
 import {expect} from 'chai';
 import {NodeCallback, Fiberit} from "../src/fiberit";
-import * as fibers from "fibers";
+import * as Fiber from "fibers";
 
 describe("given waiter", () => {
   describe("when launch fiber", () => {
     it("then should create a fiber", (done) => {
       Fiberit.launchFiber(() => {
-        expect(fibers.current).to.not.null;
+        expect(Fiber.current).to.not.null;
         done();
       });
     });
@@ -49,17 +49,6 @@ describe("given waiter", () => {
         const shouldThrow = () => Fiberit.forPromise<TestAsyncMethodClass, number>(sut, 'someRejectPromise', 5);
         expect(shouldThrow).to.throw("An error");
         done();
-      });
-    });
-
-    describe("when resolve promise but expect fails", () => {
-      it("then should throw outside promise", (done) => {
-        Fiberit.launchFiber(() => {
-          const sut = new TestAsyncMethodClass();
-          const theNumber = Fiberit.forPromise<TestAsyncMethodClass, number>(sut, 'somePromise', 5);
-          expect(theNumber).to.equal(15);
-          done();
-        });
       });
     });
   });
