@@ -78,9 +78,3 @@ export class Fiberit {
     return this.for(promiseCallback);
   }
 }
-
-interface PromiseResolved {
-  error: any;
-  data: any;
-  fulfilled: true;
-}
