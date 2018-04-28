@@ -35,7 +35,7 @@ export class Fiberit {
 
     const fnName = fn.name;
 
-    const resumeCallback: NodeCallback<V> = function (err: any, data: V) {
+    const resumeCallback: NodeCallback<V> = function (err: any, data: V|null) {
       if (fiber.callbackAlreadyCalled) {
         throw new Error("Callback for function " + fnName + " called twice. Fiberit already resumed the execution.");
       }
