@@ -17,9 +17,9 @@ export class Parallel {
    * @returns B[]
    * @throws Error
    */
-  static map<A, B>(array: A[], syncFunctionOrFunctionWithFiber: (param: A) => B, applyToFunction: boolean = false): B[] {
+  static map<A, B>(array: A[], syncFunctionOrFunctionWithFiber: (param: A) => B): B[] {
     if (array.length == 0) return [];
-    const res = this.mapAsync(array, syncFunctionOrFunctionWithFiber, applyToFunction);
+    const res = this.mapAsync(array, syncFunctionOrFunctionWithFiber);
     const errors: Error[] = <Error[]> <any[]> res
       .filter((elem) => elem instanceof Error);
     const msg: ErrorMessages = errors.reduce((acc: ErrorMessages, err: Error, index: number) => {
@@ -30,31 +30,37 @@ export class Parallel {
     return <B[]> res;
   }
 
-  static zipMap<A, B>(functs: Readonly<(element: A) => B>, values: Readonly<A>) {
+  static zipMap<A, B>(functs: ReadonlyArray<(...args: A[]) => B>, values: ReadonlyArray<A>) {
     const zipped = R.zip(functs, values);
     return Parallel.map(zipped, ([fun, val]: [(param: A) => B, A]) => fun(val));
   }
 
-  static zipMapWith<A, B>(functs: Readonly<(element: A[]) => B>, values: Readonly<A[]>) {
+  static zipMapWith<A, B>(functs: ReadonlyArray<(...args: A[]) => B>, values: ReadonlyArray<A[]>) {
     const zipped = R.zip(functs, values);
-    return Parallel.map(zipped, ([fun, val]: [(param: A) => B, A]) => fun.apply(null, val));
+    return Parallel.map(zipped, ([fun, val]: [(param: A) => B, A[]]) => fun.apply(null, val));
   }
 
-  static withSource<A, B>(array: A[]): Function {
-    return Parallel.map.bind(Parallel, array);
+  static withData<A, B>(array: A[]): (action: (param: A) => B) => B[] {
+    return (action: (param: A) => B) => Parallel.map<A, B>(array, action);
   }
 
-  static pool<A, B>(size: number, data: ReadonlyArray<A>, mapper: (...rest: A[]) => B, applyToFunction: boolean = false): B[] {
+  static pool<A, B>(size: number, data: ReadonlyArray<A>, mapper: (...rest: A[]) => B): B[] {
+    const dataSplittedBySize: A[][] = R.splitEvery(size, data);
+    const results: B[][] = dataSplittedBySize.map((pairOfData: A[]) => Parallel.map<A, B>(pairOfData, mapper));
+    return R.flatten<B>(results);
+  }
+
+  static poolWith<A, B>(size: number, data: ReadonlyArray<A>, mapper: (...rest: A[]) => B): B[] {
     const dataSplittedBySize = R.splitEvery(size, data);
-    const results: ReadonlyArray<B[]> = dataSplittedBySize.map((pairOfData: A[]) => Parallel.map(pairOfData, mapper, applyToFunction));
-    return R.flatten(results);
+    const results: ReadonlyArray<B[]> = dataSplittedBySize.map((pairOfData: A[]) => Parallel.map(pairOfData, mapper));
+    return R.flatten<B>(results);
   }
 
-  private static mapAsync<A, B>(array: A[], fn: (param: A) => B, applyToFunction: boolean = false): (B | Error)[] {
+  private static mapAsync<A, B>(array: A[], fn: (param: A) => B): (B | Error)[] {
     return Fiberit.for(async.map as Function, array, (input: A, cb: Function) => {
       return Fiberit.launchFiber(() => {
         try {
-          const res = applyToFunction ? fn.apply(fn, input) : fn.call(fn, input);
+          const res = fn.call(fn, input);
           return cb(null, res)
         } catch (e) {
           return cb(e)
