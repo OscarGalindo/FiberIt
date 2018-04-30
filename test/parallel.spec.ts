@@ -123,7 +123,7 @@ describe("given a pool", () => {
     });
   });
 
-  describe("with run functions with arity N", () => {
+  describe("when run functions with arity N", () => {
     it("then should run in a pool", (done: MochaDone) => {
       Fiberit.launchFiber(() => {
         const action = (x: number, y: number, cb: NodeCallback<number>) => setTimeout(() => cb(null, x + y), 50);

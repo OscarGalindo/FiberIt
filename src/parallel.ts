@@ -46,25 +46,17 @@ export class Parallel {
 
   static pool<A, B>(size: number, data: ReadonlyArray<A>, mapper: (...rest: A[]) => B): B[] {
     const dataSplittedBySize: A[][] = R.splitEvery(size, data);
-    const results: B[][] = dataSplittedBySize.map((pairOfData: A[]) => Parallel.map<A, B>(pairOfData, mapper));
+    const results: ReadonlyArray<B[]> = dataSplittedBySize
+      .map((pairOfData: A[]) => Parallel.map<A, B>(pairOfData, mapper));
     return R.flatten<B>(results);
   }
 
   static poolWith<A, B>(size: number, data: ReadonlyArray<A[]>, mapper: (...rest: A[]) => B): B[] {
     const dataSplittedBySize = R.splitEvery(size, data);
-    const results = dataSplittedBySize
-      .map((data: A[][]) => {
-        return data
-          .map(x => {
-            console.log(x);
-            return x;
-          })
-          .map(this.withData)
-          .map(parallel => {
-            return parallel(mapper)
-          })
-      });
-    return R.flatten<B>(results);
+    return dataSplittedBySize
+      .map((data: A[][]) => data.map(_ => {
+        return Parallel.map(_, (input: A[]) => mapper.apply(null, input))
+      }));
   }
 
   private static mapAsync<A, B>(array: A[], fn: (param: A) => B): (B | Error)[] {
