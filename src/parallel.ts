@@ -53,10 +53,10 @@ export class Parallel {
 
   static poolWith<A, B>(size: number, data: ReadonlyArray<A[]>, mapper: (...rest: A[]) => B): B[] {
     const dataSplittedBySize = R.splitEvery(size, data);
-    return dataSplittedBySize
-      .map((data: A[][]) => data.map(_ => {
-        return Parallel.map(_, (input: A[]) => mapper.apply(null, input))
-      }));
+    const resultsSplittedBySize = dataSplittedBySize
+      .map((data: A[][]) => Parallel.map(data, (input: A[]) => mapper.apply(null, input)));
+
+    return R.flatten(resultsSplittedBySize);
   }
 
   private static mapAsync<A, B>(array: A[], fn: (param: A) => B): (B | Error)[] {
@@ -66,6 +66,7 @@ export class Parallel {
           const res = fn.call(fn, input);
           return cb(null, res)
         } catch (e) {
+          console.log(e);
           return cb(e)
         }
       })
