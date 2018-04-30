@@ -29,4 +29,94 @@ With [npm](https://npmjs.org/) installed, run
 
 ## Usage
 
-Tests.
+```js
+import {Fiberit} from 'fiberit';
+
+const someAsyncFunction = (param: number) => setTimeout(() => param * 2, 100);
+
+Fiberit.launchFiber(() => {
+  const result = Fiberit.for(someAsyncFunction, 5);
+  console.log(result); // 10
+})
+```
+
+## API
+
+### Fiberit.launchFiber(fn)
+
+Calls the function inside a fiber.
+
+#### fn
+
+*Required*<br>
+Type: `Function`
+
+Function to run inside the fiber
+
+
+### Fiberit.for(asyncFunction, params)
+
+Calls the function inside a fiber.
+
+#### asyncFunction
+
+*Required*<br>
+Type: `Function`
+
+Async function with node-style callback
+
+#### params
+
+Type: `any`
+
+N parameters that will be passed to the asyncFunction
+
+### Fiberit.forMethod(object, method, params)
+
+Calls the function inside a fiber.
+
+#### object
+
+*Required*<br>
+Type: `Object`
+
+Object that has the method that will be called inside the fiber
+
+#### method
+
+*Required*<br>
+Type: `String`
+
+Method of the object with node-style callback
+
+#### params
+
+Type: `any`
+
+N parameters that will be passed to the object.method
+
+
+### Fiberit.forPromise(object, method, params)
+
+Calls the function inside a fiber.
+
+#### object
+
+*Required*<br>
+Type: `Object`
+
+Object that has the method that will be called inside the fiber
+
+#### method
+
+*Required*<br>
+Type: `String`
+
+Method of the object which return a Promise
+
+#### params
+
+Type: `any`
+
+N parameters that will be passed to the object.method
+
