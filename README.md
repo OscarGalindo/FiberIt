@@ -42,7 +42,7 @@ Fiberit.launchFiber(() => {
 
 ## API
 
-### Fiberit.launchFiber(fn)
+### `Fiberit.launchFiber(fn)`
 
 Calls the function inside a fiber.
 
@@ -54,7 +54,7 @@ Type: `Function`
 Function to run inside the fiber
 
 
-### Fiberit.for(asyncFunction, params)
+### `Fiberit.for(asyncFunction, params)`
 
 Calls the function inside a fiber.
 
@@ -71,7 +71,7 @@ Type: `any`
 
 N parameters that will be passed to the asyncFunction
 
-### Fiberit.forMethod(object, method, params)
+### `Fiberit.forMethod(object, method, params)`
 
 Calls the function inside a fiber.
 
@@ -96,7 +96,7 @@ Type: `any`
 N parameters that will be passed to the object.method
 
 
-### Fiberit.forPromise(object, method, params)
+### `Fiberit.forPromise(object, method, params)`
 
 Calls the function inside a fiber.
 
