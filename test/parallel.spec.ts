@@ -126,11 +126,8 @@ describe("given a pool", () => {
   describe("with run functions with arity N", () => {
     it("then should run in a pool", (done: MochaDone) => {
       Fiberit.launchFiber(() => {
-        const action = (x: number, y: number, cb: NodeCallback<number>) => setTimeout(() => {
-          return cb(null, x + y)
-        }, 50);
+        const action = (x: number, y: number, cb: NodeCallback<number>) => setTimeout(() => cb(null, x + y), 50);
         const parallelFunction = (x: number, y: number) => Fiberit.for(action, x, y);
-        // const parallelFunction = constructTestAsyncFunction((a: number, b: number) => a + b);
         const values = [[0, 1], [1, 2], [3, 5]];
         const result = Parallel.poolWith(2, values, parallelFunction);
         expect(result).to.deep.equal([1, 3, 8]);
