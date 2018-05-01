@@ -53,7 +53,7 @@ export class Parallel {
 
   static poolWith<A, B>(size: number, data: ReadonlyArray<A[]>, mapper: (...rest: A[]) => B): B[] {
     const dataSplittedBySize = R.splitEvery(size, data);
-    const resultsSplittedBySize: ReadonlyArray<A[]> = dataSplittedBySize
+    const resultsSplittedBySize = dataSplittedBySize
       .map((data: A[][]) => Parallel.map(data, (input: A[]) => mapper.apply(null, input)));
 
     return R.flatten(resultsSplittedBySize);
