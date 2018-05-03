@@ -30,7 +30,7 @@ With [npm](https://npmjs.org/) installed, run
 ## Usage
 
 ```js
-import {Fiberit} from 'fiberit';
+import { Fiberit } from 'fiberit';
 
 const someAsyncFunction = (param: number) => setTimeout(() => param * 2, 100);
 
