@@ -51,12 +51,23 @@ describe("given waiter", () => {
         done();
       });
     });
+
+    it("then should work with simple function", (done) => {
+      Fiberit.launchFiber(() => {
+        expect(Fiberit.forPromisedMethod(promiseFunction, 5)).to.eql(10);
+        done();
+      });
+    });
   });
 });
 
 
 function asynFunction(someNumber: number, cb: Function) {
   setTimeout(() => cb(null, someNumber * 2), 500);
+}
+
+function promiseFunction(someNumber: number): Promise<number> {
+  return Promise.resolve(someNumber * 2);
 }
 
 class TestAsyncMethodClass {

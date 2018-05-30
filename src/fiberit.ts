@@ -29,6 +29,12 @@ export class Fiberit {
     return Fiberit.applyAndWaitPromise<V>(promise);
   }
 
+  static forPromisedMethod<T, V>(methodName: T, ...restParams: any[]): V {
+    const promise: Promise<V> = methodName.apply(methodName, restParams); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
+
+    return Fiberit.applyAndWaitPromise<V>(promise);
+  }
+
   private static applyAndWait<T, V>(fn: Function, args: any): V {
     const fiber: any = fibers.current;
     if (!fiber) throw new Error('Async method can only be called inside a Fiber.');
@@ -71,6 +77,7 @@ export class Fiberit {
           cb(null, data);
         })
         .catch(error => {
+          console.log(error);
           cb(error, null);
         });
     };
