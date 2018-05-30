@@ -29,8 +29,9 @@ export class Fiberit {
     return Fiberit.applyAndWaitPromise<V>(promise);
   }
 
-  static forPromisedMethod<T, V>(methodName: T, ...restParams: any[]): V {
-    const promise: Promise<V> = methodName.apply(methodName, restParams); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
+  static forPromisedMethod<V>(promisedFunction: Function, ...restParams: any[]): V {
+    isFunction(promisedFunction);
+    const promise: Promise<V> = promisedFunction.apply(promisedFunction, restParams); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
 
     return Fiberit.applyAndWaitPromise<V>(promise);
   }
