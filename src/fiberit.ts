@@ -1,6 +1,6 @@
 import * as fibers from 'fibers';
 
-export type NodeCallback<T> = (err: any, success: T | null) => void;
+export type NodeCallback<T> = (err: any, success?: T) => void;
 
 function isFunction(fn: Function) {
   if (typeof fn !== 'function') throw new Error('Not a function');
@@ -42,7 +42,7 @@ export class Fiberit {
 
     const fnName = fn.name;
 
-    const resumeCallback: NodeCallback<V> = function (err: any, data: V|null) {
+    const resumeCallback: NodeCallback<V> = function (err: any, data?: V) {
       if (fiber.callbackAlreadyCalled) {
         throw new Error("Callback for function " + fnName + " called twice. Fiberit already resumed the execution.");
       }
@@ -79,7 +79,7 @@ export class Fiberit {
         })
         .catch(error => {
           console.log(error);
-          cb(error, null);
+          cb(error);
         });
     };
 
