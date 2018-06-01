@@ -40,20 +40,18 @@ export class Fiberit {
     const fiber: any = fibers.current;
     if (!fiber) throw new Error('Async method can only be called inside a Fiber.');
 
-    const fnName = fn.name;
-
     const resumeCallback: NodeCallback<V> = function (err: any, data?: V) {
       if (fiber.callbackAlreadyCalled) {
-        throw new Error("Callback for function " + fnName + " called twice. Fiberit already resumed the execution.");
+        throw new Error(`Callback for function ${fn.name} called twice. Fiberit already resumed the execution.`);
       }
       fiber.callbackAlreadyCalled = true;
       fiber.err = err;
       fiber.data = data;
-      if (!fiber.yielded) {
-        return;
+      if (fiber.yielded) {
+        fiber.run();
       }
       else {
-        fiber.run();
+        return;
       }
     };
 
