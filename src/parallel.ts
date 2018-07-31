@@ -13,13 +13,12 @@ export class Parallel {
    * there's a runtime error not managed from async
    * @param array A[]
    * @param syncFunctionOrFunctionWithFiber (A)=>B
-   * @param applyToFunction boolean
    * @returns B[]
    * @throws Error
    */
   static map<A, B>(array: A[], syncFunctionOrFunctionWithFiber: (param: A) => B): B[] {
     if (array.length == 0) return [];
-    const res = this.mapAsync(array, syncFunctionOrFunctionWithFiber);
+    const res = this.mapAsync<A, B>(array, syncFunctionOrFunctionWithFiber);
     const errors: Error[] = <Error[]> <any[]> res
       .filter((elem) => elem instanceof Error);
     const msg: ErrorMessages = errors.reduce((acc: ErrorMessages, err: Error, index: number) => {
@@ -27,7 +26,7 @@ export class Parallel {
       return acc
     }, {});
     if (msg[0]) throw new Error(JSON.stringify(msg));
-    return <B[]> res;
+    return res;
   }
 
   static zipMap<A, B>(functs: ReadonlyArray<(...args: A[]) => B>, values: ReadonlyArray<A>) {
@@ -53,7 +52,7 @@ export class Parallel {
 
   static poolWith<A, B>(size: number, data: ReadonlyArray<A[]>, mapper: (...rest: A[]) => B): B[] {
     const dataSplittedBySize = R.splitEvery(size, data);
-    const resultsSplittedBySize = dataSplittedBySize
+    const resultsSplittedBySize: ReadonlyArray<B[]> = dataSplittedBySize
       .map((data: A[][]) => Parallel.map(data, (input: A[]) => mapper.apply(null, input)));
 
     return R.flatten(resultsSplittedBySize);
@@ -66,7 +65,6 @@ export class Parallel {
           const res = fn.call(fn, input);
           return cb(null, res)
         } catch (e) {
-          console.log(e);
           return cb(e)
         }
       })
