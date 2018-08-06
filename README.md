@@ -32,7 +32,7 @@ With [npm](https://npmjs.org/) installed, run
 ```js
 import { Fiberit } from 'fiberit';
 
-const someAsyncFunction = (param: number) => setTimeout(() => param * 2, 100);
+const someAsyncFunction = (param: number, cb: NodeCallback<number>) => setTimeout(() => cb(null, param * 2), 100);
 
 Fiberit.launchFiber(() => {
   const result = Fiberit.for(someAsyncFunction, 5);

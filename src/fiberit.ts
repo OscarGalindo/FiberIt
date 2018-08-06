@@ -76,7 +76,6 @@ export class Fiberit {
           cb(null, data);
         })
         .catch(error => {
-          console.log(error);
           cb(error);
         });
     };

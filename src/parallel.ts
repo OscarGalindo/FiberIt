@@ -26,7 +26,7 @@ export class Parallel {
       return acc
     }, {});
     if (msg[0]) throw new Error(JSON.stringify(msg));
-    return res;
+    return res as B[];
   }
 
   static zipMap<A, B>(functs: ReadonlyArray<(...args: A[]) => B>, values: ReadonlyArray<A>) {
@@ -55,7 +55,7 @@ export class Parallel {
     const resultsSplittedBySize: ReadonlyArray<B[]> = dataSplittedBySize
       .map((data: A[][]) => Parallel.map(data, (input: A[]) => mapper.apply(null, input)));
 
-    return R.flatten(resultsSplittedBySize);
+    return R.flatten<B>(resultsSplittedBySize);
   }
 
   private static mapAsync<A, B>(array: A[], fn: (param: A) => B): (B | Error)[] {
