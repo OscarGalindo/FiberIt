@@ -33,7 +33,7 @@
     "mocha": "5.0.1",
     "rimraf": "2.6.1",
     "ts-node": "4.1.0",
-    "typescript": "3.0.1"
+    "typescript": "2.6.2"
   },
   "dependencies": {
     "@types/async": "2.0.49",

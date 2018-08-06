@@ -17,14 +17,14 @@ export class Fiberit {
     return Fiberit.applyAndWait<null, T>(asyncFunction, restParams);
   }
 
-  static forMethod<T extends any[], V>(obj: any, methodName: keyof T, ...restParams: any[]): V {
-    const method: (...args: T[]) => V = obj[methodName].bind(obj); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
+  static forMethod<T, V>(obj: T, methodName: keyof T, ...restParams: any[]): V {
+    const method = (obj as any)[methodName].bind(obj); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
 
     return Fiberit.applyAndWait<T, V>(method, restParams);
   }
 
   static forPromise<T, V>(obj: T, methodName: keyof T, ...restParams: any[]): V {
-    const promise: Promise<V> = obj[methodName].apply(obj, restParams); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
+    const promise: Promise<V> = (obj as any)[methodName].apply(obj, restParams); // TODO this breaks signature from method, if method return string and V is set as number, will compile.
 
     return Fiberit.applyAndWaitPromise<V>(promise);
   }
