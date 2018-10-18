@@ -36,7 +36,7 @@ export class Parallel {
     return Parallel.map(zipped, ([fun, val]: KeyValuePair<(a: A) => B, A>) => fun(val));
   }
 
-  static zipMapWith<A, B>(functs: [(...args: A[]) => B], values: [A[]]) {
+  static zipMapWith<A, B>(functs: ((...args: A[]) => B)[], values: A[][]) {
     const zipped: KeyValuePair<(a: A) => B, A[]>[] = R.zip(functs, values);
     return Parallel.map(zipped, ([fun, val]: KeyValuePair<(param: A) => B, A[]>) => fun.apply(null, val));
   }
