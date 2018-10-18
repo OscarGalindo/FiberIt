@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import {Parallel} from "../src/Parallel";
-import {Fiberit, NodeCallback} from "../src/fiberit";
+import {Parallel} from "../src";
+import {Fiberit, NodeCallback} from "../src";
 
 describe("parallel map", () => {
   describe("called", () => {
@@ -92,8 +92,8 @@ describe("zipMap", () => {
     });
     describe("multiple arity functions", () => {
       it("should apply the correct values", (done: MochaDone) => {
-        const multipleArityFunction1 = (a: number, b: number) => a + b;
-        const multipleArityFunction2 = (a: number, b: number, c: number) => a * b * c;
+        const multipleArityFunction1 = (a: number, b: number): number => a + b;
+        const multipleArityFunction2 = (a: number, b: number, c: number): number => a * b * c;
         const functs = [
           multipleArityFunction1,
           multipleArityFunction2
