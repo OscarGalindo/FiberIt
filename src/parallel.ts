@@ -1,6 +1,7 @@
 import * as async from "async";
 import {Fiberit} from "./fiberit";
 import * as R from "ramda";
+import {KeyValuePair} from "ramda";
 
 type ErrorMessage = { stack: string, msg: string }
 type ErrorMessages = { [index: number]: ErrorMessage; }
@@ -29,14 +30,15 @@ export class Parallel {
     return res as B[];
   }
 
-  static zipMap<A, B>(functs: ReadonlyArray<(...args: A[]) => B>, values: ReadonlyArray<A>) {
-    const zipped = R.zip(functs, values);
-    return Parallel.map(zipped, ([fun, val]: [(param: A) => B, A]) => fun(val));
+  static zipMap<A, B>(functs: ReadonlyArray<(a: A) => B>,
+                      values: A[]) {
+    const zipped: KeyValuePair<(a: A) => B, A>[] = R.zip(functs, values);
+    return Parallel.map(zipped, ([fun, val]: KeyValuePair<(a: A) => B, A>) => fun(val));
   }
 
-  static zipMapWith<A, B>(functs: ReadonlyArray<(...args: A[]) => B>, values: ReadonlyArray<A[]>) {
-    const zipped = R.zip(functs, values);
-    return Parallel.map(zipped, ([fun, val]: [(param: A) => B, A[]]) => fun.apply(null, val));
+  static zipMapWith<A, B>(functs: [(...args: A[]) => B], values: [A[]]) {
+    const zipped: KeyValuePair<(a: A) => B, A[]>[] = R.zip(functs, values);
+    return Parallel.map(zipped, ([fun, val]: KeyValuePair<(param: A) => B, A[]>) => fun.apply(null, val));
   }
 
   static withData<A, B>(array: A[]): (action: (param: A) => B) => B[] {
