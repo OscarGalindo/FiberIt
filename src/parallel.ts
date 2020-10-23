@@ -38,7 +38,7 @@ export class Parallel {
 
   static zipMapWith<A, B>(functs: ((...args: A[]) => B)[], values: A[][]) {
     const zipped: KeyValuePair<(a: A) => B, A[]>[] = R.zip(functs, values);
-    return Parallel.map(zipped, ([fun, val]: KeyValuePair<(param: A) => B, A[]>) => fun.apply(null, val));
+    return Parallel.map(zipped, ([fun, val]: KeyValuePair<(param: A) => B, A[]>) => fun.apply(null, val as any));
   }
 
   static withData<A, B>(array: A[]): (action: (param: A) => B) => B[] {
@@ -49,7 +49,7 @@ export class Parallel {
     const dataSplittedBySize: A[][] = R.splitEvery(size, data);
     const results: ReadonlyArray<B[]> = dataSplittedBySize
       .map((pairOfData: A[]) => Parallel.map<A, B>(pairOfData, mapper));
-    return R.flatten<B>(results);
+    return  R.flatten(results) as any;
   }
 
   static poolWith<A, B>(size: number, data: ReadonlyArray<A[]>, mapper: (...rest: A[]) => B): B[] {
@@ -57,7 +57,7 @@ export class Parallel {
     const resultsSplittedBySize: ReadonlyArray<B[]> = dataSplittedBySize
       .map((data: A[][]) => Parallel.map(data, (input: A[]) => mapper.apply(null, input)));
 
-    return R.flatten<B>(resultsSplittedBySize);
+    return R.flatten(resultsSplittedBySize) as any;
   }
 
   private static mapAsync<A, B>(array: A[], fn: (param: A) => B): (B | Error)[] {
