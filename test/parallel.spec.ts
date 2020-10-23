@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {Parallel} from "../src";
 import {Fiberit, NodeCallback} from "../src";
+import {Done} from "mocha";
 
 describe("parallel map", () => {
   describe("called", () => {
@@ -8,7 +9,7 @@ describe("parallel map", () => {
       const asyncFunction = (input: number, cb: Function) => setTimeout(() => cb(null, input * 2), 2);
       const parallelFunction: (element: number) => number = (element: number) => Fiberit.for<number>(asyncFunction, element);
 
-      it("when passed array with values", (done: MochaDone) => {
+      it("when passed array with values", (done: Done) => {
         const params = [1, 2, 3];
         Fiberit.launchFiber(
           () => {
@@ -18,7 +19,7 @@ describe("parallel map", () => {
           }
         );
       });
-      it("do nothing when passed empty array", (done: MochaDone) => {
+      it("do nothing when passed empty array", (done: Done) => {
         const params: any[] = [];
         Fiberit.launchFiber(
           () => {
@@ -28,7 +29,7 @@ describe("parallel map", () => {
           }
         );
       });
-      it("should work with data", (done: MochaDone) => {
+      it("should work with data", (done: Done) => {
         const source = [1, 2, 3];
         const parallel = Parallel.withData(source);
 
@@ -45,7 +46,7 @@ describe("some error occurs", () => {
   const asyncFunction = (input: number, cb: Function) => cb(new Error(`error ${input}`));
   const parallelFunction = (element: number) => Fiberit.for(asyncFunction, element);
 
-  it("should throw exception", (done: MochaDone) => {
+  it("should throw exception", (done: Done) => {
     const params = [1, 2, 3];
     Fiberit.launchFiber(() => {
       const expectedToThrowOnExecute = () => Parallel.map(params, parallelFunction);
@@ -71,7 +72,7 @@ describe("zipMap", () => {
     };
 
   describe("array of functions with array of values", () => {
-    it("apply them in correspondence", (done: MochaDone) => {
+    it("apply them in correspondence", (done: Done) => {
       const functs = [
         constructTestAsyncFunction((_: number) => _ * 2),
         constructTestAsyncFunction((_: number) => _ * 3)
@@ -81,7 +82,7 @@ describe("zipMap", () => {
       verifyZipMap(functs, values, expected)(done)
     });
     describe("different array length", () => {
-      it("should apply just the minimum common number", (done: MochaDone) => {
+      it("should apply just the minimum common number", (done: Done) => {
         const functs = [
           constructTestAsyncFunction((_: number) => _ * 2)
         ];
@@ -91,7 +92,7 @@ describe("zipMap", () => {
       });
     });
     describe("multiple arity functions", () => {
-      it("should apply the correct values", (done: MochaDone) => {
+      it("should apply the correct values", (done: Done) => {
         const multipleArityFunction1 = (a: number, b: number): number => a + b;
         const multipleArityFunction2 = (a: number, b: number, c: number): number => a * b * c;
         const functs = [
@@ -112,7 +113,7 @@ describe("zipMap", () => {
 
 describe("given a pool", () => {
   describe("when run unary function", () => {
-    it("should return value", (done: MochaDone) => {
+    it("should return value", (done: Done) => {
       const parallelFunction = constructTestAsyncFunction((_: number) => _ * 2);
       Fiberit.launchFiber(() => {
         const values = [1, 2, 3, 4, 5, 6];
@@ -124,7 +125,7 @@ describe("given a pool", () => {
   });
 
   describe("when run functions with arity N", () => {
-    it("then should run in a pool", (done: MochaDone) => {
+    it("then should run in a pool", (done: Done) => {
       Fiberit.launchFiber(() => {
         const action = (x: number, y: number, cb: NodeCallback<number>) => setTimeout(() => cb(null, x + y), 50);
         const parallelFunction = (x: number, y: number) => Fiberit.for(action, x, y);

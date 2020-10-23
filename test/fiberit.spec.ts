@@ -1,10 +1,11 @@
 import {expect} from 'chai';
-import {NodeCallback, Fiberit} from "../src/fiberit";
+import {NodeCallback, Fiberit} from "../src";
 import * as Fiber from "fibers";
+import {Done} from "mocha";
 
 describe("given waiter", () => {
   describe("when launch fiber", () => {
-    it("then should create a fiber", (done) => {
+    it("then should create a fiber", (done: Done) => {
       Fiberit.launchFiber(() => {
         expect(Fiber.current).to.not.null;
         done();
@@ -13,7 +14,7 @@ describe("given waiter", () => {
   });
 
   describe("when wait for an async function", () => {
-    it("then should yield execution", (done) => {
+    it("then should yield execution", (done: Done) => {
       Fiberit.launchFiber(() => {
         const theNumber: number = Fiberit.for<number>(asynFunction, 5);
         expect(theNumber).to.equal(10);
@@ -23,7 +24,7 @@ describe("given waiter", () => {
   });
 
   describe("when wait for method property", () => {
-    it("then should yield execution", (done) => {
+    it("then should yield execution", (done: Done) => {
       Fiberit.launchFiber(() => {
         const sut = new TestAsyncMethodClass();
         const theNumber = Fiberit.forMethod<TestAsyncMethodClass, number>(sut, 'someAsyncMethod', 5);
@@ -34,7 +35,7 @@ describe("given waiter", () => {
   });
 
   describe("when wait for a promise", () => {
-    it("then should return data if promise is resolved", (done) => {
+    it("then should return data if promise is resolved", (done: Done) => {
       Fiberit.launchFiber(() => {
         const sut = new TestAsyncMethodClass();
         const theNumber = Fiberit.forPromise<TestAsyncMethodClass, number>(sut, 'somePromise', 5);
@@ -43,7 +44,7 @@ describe("given waiter", () => {
       });
     });
 
-    it("then should throw if promise is rejected", (done) => {
+    it("then should throw if promise is rejected", (done: Done) => {
       Fiberit.launchFiber(() => {
         const sut = new TestAsyncMethodClass();
         const shouldThrow = () => Fiberit.forPromise<TestAsyncMethodClass, number>(sut, 'someRejectPromise', 5);
@@ -52,7 +53,7 @@ describe("given waiter", () => {
       });
     });
 
-    it("then should work with simple function", (done) => {
+    it("then should work with simple function", (done: Done) => {
       Fiberit.launchFiber(() => {
         expect(Fiberit.forPromisedMethod(promiseFunction, 5)).to.eql(10);
         done();
