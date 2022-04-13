@@ -38,7 +38,7 @@
   "dependencies": {
     "@types/async": "3.2.3",
     "@types/ramda": "0.27.30",
-    "async": "3.2.0",
+    "async": "3.2.2",
     "fibers": "5.0.0",
     "ramda": "0.27.1"
   }
